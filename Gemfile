@@ -26,6 +26,9 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'rails_12factor', group: :production
 gem 'puma'
 
+# See https://richonrails.com/articles/google-authentication-in-ruby-on-rails
+gem "omniauth-google-oauth2", "~> 0.2.1"
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
