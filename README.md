@@ -32,7 +32,7 @@ On your Dokku server:
 
 On your Dokku server:
     
-    dokku config:set --no-restart dokku-rails-omniauth-bootstrap-react GOOGLE_CLIENT_ID=xxx GOOGLE_CLIENT_SECRET=yyy    
+    dokku config:set dokku-rails-omniauth-bootstrap-react GOOGLE_CLIENT_ID=xxx GOOGLE_CLIENT_SECRET=yyy    
 
 # Running locally
 
