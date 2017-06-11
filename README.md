@@ -1,38 +1,29 @@
-# ruby-rails-sample
+# dokku-rails-omniauth-bootstrap-react
 
-This is a simple Ruby app using the [Rails](http://rubyonrails.org) framework
+# Installation
 
-## Running Locally
+## Create your app
 
-Make sure you have [Ruby](https://www.ruby-lang.org), [Bundler](http://bundler.io) and the [Heroku Toolbelt](https://toolbelt.heroku.com/) installed.
+On your Dokku server:
 
-```sh
-git clone git@github.com:heroku/ruby-rails-sample.git # or clone your own fork
-cd ruby-rails-sample
-bundle
-bundle exec rake bootstrap
-heroku local
-```
+    dokku app:create dokku-rails-omniauth-bootstrap-react
+    sudo dokku plugin:install https://github.com/dokku/dokku-postgres.git
+    dokku postgres:create dokku-rails-omniauth-bootstrap-react-database
+    dokku postgres:link dokku-rails-omniauth-bootstrap-react-database dokku-rails-omniauth-bootstrap-react
 
-Your app should now be running on [localhost:5000](http://localhost:5000/).
+## Push to Dokku
 
-## Deploying to Heroku
+On you local computer:
 
-```
-heroku create
-git push heroku master
-heroku run rake db:migrate
-heroku open
-```
+    git clone git@github.com:curious-attempt-bunny/dokku-rails-omniauth-bootstrap-react.git
+    cd dokku-rails-omniauth-bootstrap-react
+    git remote add dokku dokku@yourhostontheinternet:dokku-rails-omniauth-bootstrap-react
+    git push dokku master
 
-Alternatively, you can deploy your own copy of the app using the web-based flow:
+## Add HTTPS to your app
 
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+On your Dokku server:
 
-## Documentation
-
-For more information about using Ruby on Heroku, see these Dev Center articles:
-
-- [Ruby on Heroku](https://devcenter.heroku.com/categories/ruby)
-- [Getting Started with Ruby on Heroku](https://devcenter.heroku.com/articles/getting-started-with-ruby)
-- [Heroku Ruby Support](https://devcenter.heroku.com/articles/ruby-support)
+    sudo dokku plugin:install https://github.com/dokku/dokku-letsencrypt.git
+    dokku config:set --no-restart dokku-rails-omniauth-bootstrap-react DOKKU_LETSENCRYPT_EMAIL=yourregistrationemail.com
+    dokku letsencrypt:cron-job --add    
