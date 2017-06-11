@@ -47,3 +47,6 @@ This was pieced together from:
 
 * http://dokku.viewdocs.io/dokku/deployment/application-deployment/
 * https://richonrails.com/articles/google-authentication-in-ruby-on-rails
+* http://www.rubyfleebie.com/how-to-use-dokku-on-digitalocean-and-deploy-rails-applications-like-a-pro/
+* https://hackhands.com/react-rails-tutorial/
+* https://github.com/reactjs/react-rails

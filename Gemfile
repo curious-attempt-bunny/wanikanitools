@@ -29,6 +29,9 @@ gem 'puma'
 # See https://richonrails.com/articles/google-authentication-in-ruby-on-rails
 gem "omniauth-google-oauth2", "~> 0.2.1"
 
+# See https://github.com/reactjs/react-rails / https://hackhands.com/react-rails-tutorial/
+gem "react-rails"
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
