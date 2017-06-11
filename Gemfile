@@ -32,6 +32,11 @@ gem "omniauth-google-oauth2", "~> 0.2.1"
 # See https://github.com/reactjs/react-rails / https://hackhands.com/react-rails-tutorial/
 gem "react-rails"
 
+# See https://github.com/seyhunak/twitter-bootstrap-rails
+gem "therubyracer"
+gem "less-rails"
+gem "twitter-bootstrap-rails"
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 

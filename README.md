@@ -50,3 +50,4 @@ This was pieced together from:
 * http://www.rubyfleebie.com/how-to-use-dokku-on-digitalocean-and-deploy-rails-applications-like-a-pro/
 * https://hackhands.com/react-rails-tutorial/
 * https://github.com/reactjs/react-rails
+* https://github.com/seyhunak/twitter-bootstrap-rails
