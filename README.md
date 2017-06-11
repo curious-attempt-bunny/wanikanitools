@@ -41,6 +41,10 @@ On your Dokku server:
     GOOGLE_CLIENT_ID=xxx GOOGLE_CLIENT_SECRET=yyy bundle exec rails server
     open http://localhost:3000
 
+## Add New Relic monitoring
+
+    dokku config:set dokku-rails-omniauth-bootstrap-react NEW_RELIC_LICENSE_KEY=xxx NEW_RELIC_APP_NAME=yyy
+
 # Resources
 
 This was pieced together from:
