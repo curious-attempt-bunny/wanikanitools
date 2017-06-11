@@ -27,3 +27,23 @@ On your Dokku server:
     sudo dokku plugin:install https://github.com/dokku/dokku-letsencrypt.git
     dokku config:set --no-restart dokku-rails-omniauth-bootstrap-react DOKKU_LETSENCRYPT_EMAIL=yourregistrationemail.com
     dokku letsencrypt:cron-job --add    
+
+## Add Google OAuth2 config to your add
+
+On your Dokku server:
+    
+    dokku config:set --no-restart dokku-rails-omniauth-bootstrap-react GOOGLE_CLIENT_ID=xxx GOOGLE_CLIENT_SECRET=yyy    
+
+# Running locally
+
+    bundle install
+    bundle exec rake db:create db:migrate
+    GOOGLE_CLIENT_ID=xxx GOOGLE_CLIENT_SECRET=yyy bundle exec rails server
+    open http://localhost:3000
+
+# Resources
+
+This was pieced together from:
+
+* http://dokku.viewdocs.io/dokku/deployment/application-deployment/
+* https://richonrails.com/articles/google-authentication-in-ruby-on-rails
