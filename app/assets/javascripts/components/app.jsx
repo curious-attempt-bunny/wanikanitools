@@ -1,5 +1,8 @@
 class App extends React.Component {
     renderAuthButton() {
+        // no auth for now
+        return <div/>
+
         const { current_user } = this.props
 
         if (current_user) {
