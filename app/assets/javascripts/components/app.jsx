@@ -7,27 +7,6 @@ class App extends React.Component {
     }
   }
 
-  renderAuthButton() {
-    // no auth for now
-    return <div/>
-
-    const { current_user } = this.props
-
-    if (current_user) {
-      return (
-        <form className="navbar-form navbar-right" method="get" action="/signout">
-          <button type="submit" className="btn btn-default">Sign out</button>
-        </form>
-      )
-    } else {
-      return (
-        <form className="navbar-form navbar-right" method="get" action="/auth/google_oauth2">
-          <button type="submit" className="btn btn-success">Sign in with Google</button>
-        </form>
-      )
-    }
-  }
-
   componentWillMount() {
     var that = this;
     fetch('/api/v2/review_statistics')
@@ -64,29 +43,9 @@ class App extends React.Component {
 
   render() {
       return (
-          <div>
+          <div style={{paddingTop: '5em'}}>
 
-  <nav className="navbar navbar-inverse navbar-fixed-top">
-    <div className="container">
-      <div className="navbar-header">
-        <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-          <span className="sr-only">Toggle navigation</span>
-          <span className="icon-bar"></span>
-          <span className="icon-bar"></span>
-          <span className="icon-bar"></span>
-        </button>
-        <a className="navbar-brand" href="/">WaniKaniTools</a>
-      </div>
-      <div id="navbar" className="navbar-collapse collapse">
-        { this.renderAuthButton() }
-      </div>
-    </div>
-  </nav>
-
-  <div className="container">
-    <br/><br/>
-    <h1>Leaches</h1>
-    <ul>
+    <marquee behavior="scroll" direction="left" scrollamount="1" style={{fontSize: '10em'}}>
     { this.state.leaches.map(function(leach) {
       var color = 'red';
       if (leach.type == 'radical') {
@@ -96,22 +55,17 @@ class App extends React.Component {
       } else if (leach.type == 'vocabulary') {
         color = '#a0f'
       }
-      return <li key={leach.id}>
+      return <div key={leach.id} style={{display: 'inline-block', paddingRight: '5em', verticalAlign: 'top'}}>
         <span style={{color: 'white', backgroundColor: color, padding: '.2em'}}>
           {leach.identifier ? leach.identifier : <img src={leach.images[0].url} style={{height: '1em'}}/>}
-        </span>&nbsp;
-        {leach.primary_meaning}&nbsp;
-        {leach.primary_reading}
-      </li> })
+        </span>
+        <br/>
+        <span style={{paddingLeft:'1em'}}>{leach.primary_meaning}</span>
+        <br/>
+        <span style={{paddingLeft:'2em'}}>{leach.primary_reading}</span>
+      </div> })
     }
-    </ul>
-
-    <hr/>
-
-    <footer>
-      
-    </footer>
-  </div> 
+    </marquee>
 
           </div>
       )
