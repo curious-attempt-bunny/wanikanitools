@@ -1,6 +1,28 @@
 class ApiProxyController < ActionController::Base
+    @@subjects = Hash.new
+
     def get
         json = fetch(request.path)
+
+        if request.path == '/api/v2/review_statistics'
+            filename = filename_for('', '/api/v2/subjects')
+            if @@subjects.empty? && File.exists?(filename)
+                puts 'Building subjects hash'
+                subjects_json = JSON.parse(File.read(filename))
+                subjects_json['data'].each do |v|
+                    @@subjects[v['id']] = v
+                end
+            end
+
+            json['data'].each do |v|
+                puts v.inspect
+                subject_id = v['data']['subject_id']
+                puts subject_id
+                if @@subjects.include?(subject_id)
+                    v['data']['subject'] = @@subjects[subject_id]
+                end
+            end
+        end
 
         # render json: cmd
         render json: json
@@ -8,11 +30,15 @@ class ApiProxyController < ActionController::Base
 
     private
 
+    def filename_for(api_key, path)
+        prefix = "#{api_key}_"
+        prefix = '' if path == '/api/v2/subjects'        
+        "/tmp/#{prefix}#{path.gsub('/', '_')}" # FIXME insecure
+    end
+
     def fetch(path)
         api_key = params[:api_key] || ENV['WANIKANI_V2_API_KEY']
-        prefix = "#{api_key}_"
-        prefix = '' if path == '/api/v2/subjects'
-        filename = "/tmp/#{prefix}#{path.gsub('/', '_')}" # FIXME insecure
+        filename = filename_for(api_key, path)
 
         if File.exists?(filename)
             puts "Cache hit"
