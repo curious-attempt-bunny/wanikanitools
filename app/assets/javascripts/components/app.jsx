@@ -12,7 +12,7 @@ class App extends React.Component {
 
   componentWillMount() {
     var that = this;
-    fetch('/api/v2/review_statistics')
+    fetch('/review_data/merged')
       .then(function(response) { return response.json(); })
       .then(function(json) {
         var leaches = [];

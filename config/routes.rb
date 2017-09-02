@@ -10,9 +10,10 @@ Rails.application.routes.draw do
 
   get 'api/v2/user', to: 'api_proxy#get'
   get 'api/v2/subjects', to: 'api_proxy#get'
-  get 'api/v2/subjects/:id', to: 'api_proxy#get'
   get 'api/v2/assignments', to: 'api_proxy#get'
   get 'api/v2/study_materials', to: 'api_proxy#get'
   get 'api/v2/summary', to: 'api_proxy#get'
   get 'api/v2/review_statistics', to: 'api_proxy#get'
+
+  get 'review_data/merged', to: 'review_data#merged'
 end
