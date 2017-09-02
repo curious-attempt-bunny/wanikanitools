@@ -25,6 +25,14 @@ body {
 
         &.type {
             transition: color 2s 0s, background-color 2s 0s;
+
+            rb {
+                transition: color 2s 0s, background-color 2s 0s;
+            }
+
+            rt {
+                transition: color 2s 14s, background-color 2s 14s;
+            }
         }
 
         &.reading {
@@ -49,10 +57,20 @@ body {
 
         .kanji {
             background-color: #f0a;
+
+            rb {
+                background-color: #f0a;
+                color: white;
+            }
         }
 
         .vocabulary {
             background-color: #a0f;
+
+            rb {
+                background-color: #a0f;     
+                color: white;       
+            }
         }
     }
 }

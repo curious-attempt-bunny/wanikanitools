@@ -1,3 +1,4 @@
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -74,20 +75,74 @@ class App extends React.Component {
 // <marquee behavior="scroll" direction="left" scrollamount="1" style={{fontSize: '10em'}}>
 // </marquee>
 
+  ruby(word, spelling) {
+    if (!spelling) return null;
+
+    var hiragana = 'あいうえおかがきぎくぐけげこごさざしじすずせぜそぞただちぢつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろわゐん';
     
+    var regex = '';
+    var kanji_count = 0;
+    var prefixes = [];
+    var kanji = [];
+    var prefix = ''
+    for(var i=0; i<word.length; i++) {
+      if (hiragana.indexOf(word[i]) == -1) {
+        if (!regex.endsWith('(.*)')) {
+          regex += '(.*)';
+          kanji_count += 1;
+          prefixes.push(prefix);
+          prefix = '';
+          kanji.push(word[i]);
+        } else {
+          kanji[kanji.length-1] += word[i];
+        }
+      } else {
+        regex += word[i];
+        prefix += word[i];
+      }
+    }
+    prefixes.push(prefix);
+
+    var pattern = new RegExp(regex, 'u');
+    var match = pattern.exec(spelling);
+    if (!match) {
+      console.log(word,'|',spelling, '**no match**');
+      return null;
+    }
+
+    for(var i=0; i<kanji_count; i++) {
+      if (match[i+1] == '') {
+        console.log(word,'|',spelling, '**ambiguous**');
+        return null;
+      }
+    }
+    
+    var html = '';
+    for(var i=0; i<kanji_count; i++) {
+      html += prefixes[i];
+      html += '<ruby><rb>'+kanji[i]+'</rb><rt>'+match[i+1]+'</rt></ruby>';
+    }
+    html += prefixes[kanji_count];
+
+    console.log(word,'|',spelling,'|',html);
+
+    return html;
+  }
+
   render() {
-      return (
+    var that = this;
+    return (
           <div className='leaches'>
 
     { this.state.leaches.map(function(leach) {
+      var html = that.ruby(leach.identifier, leach.primary_reading);
       return <div id={'leach_'+leach.id} key={leach.id} className='leach'>
         <span className={'type '+leach.type}>
-          {leach.identifier ? leach.identifier : <img src={leach.images[0].url} style={{height: '1em'}}/>}
+          {html ? <span dangerouslySetInnerHTML={{__html: html}}/> : leach.identifier ? leach.identifier : <img src={leach.images[0].url} style={{height: '1em'}}/>}
         </span>
-        { leach.primary_reading && <br/> }
-        { leach.primary_reading && <span className='reading'>{leach.primary_reading}</span> }
-        <br/>
-        <span className='meaning'>{leach.primary_meaning}</span>
+        &nbsp;<span className='meaning'>{leach.primary_meaning}</span>
+        { leach.primary_reading && !html && <br/> }
+        { leach.primary_reading && !html && <span className='reading'>{leach.primary_reading}</span> }
       </div> })
     }
     
