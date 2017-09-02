@@ -6,3 +6,36 @@ body {
     background-color: black;
     color: white;
 }
+
+.leaches {
+    position: relative;
+}
+
+.leach {
+    font-size: 5em;
+    position: absolute;
+    top:0;
+    left:0;
+    color: black;
+    background-color: black;
+    opacity: 0;
+    transition: opacity 2s;
+
+    &.active {
+        color: white;
+        opacity: 1;
+
+        .radical {
+            background-color: #0af;
+        }
+
+        .kanji {
+            background-color: #f0a;
+        }
+
+        .vocabulary {
+            background-color: #a0f;
+        }
+    }
+}
+

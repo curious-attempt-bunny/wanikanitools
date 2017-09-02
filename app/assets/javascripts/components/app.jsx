@@ -5,6 +5,9 @@ class App extends React.Component {
     this.state = {
       leaches: []
     }
+
+    this.last_id = null;
+    this.speed = 5000;
   }
 
   componentWillMount() {
@@ -15,7 +18,7 @@ class App extends React.Component {
         var leaches = [];
         json.data.forEach(function(item) {
           var guesses_total = item.data.meaning_correct + item.data.meaning_incorrect + item.data.reading_correct + item.data.reading_incorrect;
-          if (guesses_total > 0) {
+          if (guesses_total > 0 && (item.data.meaning_current_streak < 3 || (item.data.reading_current_streak < 3 && item.data.subject_type != 'radical'))) {
             var score = (item.data.meaning_correct + item.data.reading_correct) / (guesses_total + 1.0);
             var identifier = item.data.subject.data.character || item.data.subject.data.slug || item.data.subject.data.characters;
             var primary_reading;
@@ -30,43 +33,62 @@ class App extends React.Component {
               score: score,
               primary_reading: primary_reading,
               primary_meaning: primary_meaning,
-              type: item.data.subject_type
+              type: item.data.subject_type,
+              item: item
             }
-            console.log(leach, item);
+            // console.log(leach, item);
             leaches.push(leach);
           }
         });
         leaches = leaches.sort(function(a,b) { return a.score - b.score; });
         that.setState({leaches: leaches.slice(0,100)});
+
+        that.animate();
+        setInterval(function() {
+          that.animate();
+        }, that.speed);
       });
   }
 
+  animate() {
+    if (this.state.leaches.length == 0) {
+      return;
+    }
+
+    var id;
+    while(true) {
+      var index = Math.trunc(Math.random()*this.state.leaches.length);
+      id = 'leach_'+this.state.leaches[index].id
+      if (id != this.last_id) {
+        break;
+      }
+    }
+
+    $('.leach').removeClass('active');
+    $('#'+id).addClass('active').css('left', Math.random()*500).css('top', Math.random()*500);;
+    this.last_id = id;
+  }
+
+// <marquee behavior="scroll" direction="left" scrollamount="1" style={{fontSize: '10em'}}>
+// </marquee>
+
+    
   render() {
       return (
-          <div style={{paddingTop: '5em'}}>
+          <div className='leaches'>
 
-    <marquee behavior="scroll" direction="left" scrollamount="1" style={{fontSize: '10em'}}>
     { this.state.leaches.map(function(leach) {
-      var color = 'red';
-      if (leach.type == 'radical') {
-        color = '#0af';
-      } else if (leach.type == 'kanji') {
-        color = '#f0a';
-      } else if (leach.type == 'vocabulary') {
-        color = '#a0f'
-      }
-      return <div key={leach.id} style={{display: 'inline-block', paddingRight: '5em', verticalAlign: 'top'}}>
-        <span style={{color: 'white', backgroundColor: color, padding: '.2em'}}>
+      return <div id={'leach_'+leach.id} key={leach.id} className='leach'>
+        <span style={{padding: '.2em'}} className={leach.type}>
           {leach.identifier ? leach.identifier : <img src={leach.images[0].url} style={{height: '1em'}}/>}
         </span>
+        { leach.primary_reading && <br/> }
+        { leach.primary_reading && <span style={{padding: '.2em'}}>{leach.primary_reading}</span> }
         <br/>
-        <span style={{paddingLeft:'1em'}}>{leach.primary_meaning}</span>
-        <br/>
-        <span style={{paddingLeft:'2em'}}>{leach.primary_reading}</span>
+        <span style={{padding: '.2em'}}>{leach.primary_meaning}</span>
       </div> })
     }
-    </marquee>
-
+    
           </div>
       )
   }
