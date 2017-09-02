@@ -33,7 +33,7 @@ class ApiProxyController < ActionController::Base
     def filename_for(api_key, path)
         prefix = "#{api_key}_"
         prefix = '' if path == '/api/v2/subjects'        
-        "/tmp/#{prefix}#{path.gsub('/', '_')}" # FIXME insecure
+        "data/#{prefix}#{path.gsub('/', '_')}" # FIXME insecure
     end
 
     def fetch(path)
