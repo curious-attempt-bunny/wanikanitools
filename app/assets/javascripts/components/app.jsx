@@ -7,7 +7,7 @@ class App extends React.Component {
     }
 
     this.last_id = null;
-    this.speed = 5000;
+    this.speed = 20000;
   }
 
   componentWillMount() {
@@ -43,10 +43,12 @@ class App extends React.Component {
         leaches = leaches.sort(function(a,b) { return a.score - b.score; });
         that.setState({leaches: leaches.slice(0,100)});
 
-        that.animate();
-        setInterval(function() {
+        setTimeout(function() {
           that.animate();
-        }, that.speed);
+          setInterval(function() {
+            that.animate();
+          }, that.speed);
+        }, 0);
       });
   }
 
@@ -79,13 +81,13 @@ class App extends React.Component {
 
     { this.state.leaches.map(function(leach) {
       return <div id={'leach_'+leach.id} key={leach.id} className='leach'>
-        <span style={{padding: '.2em'}} className={leach.type}>
+        <span className={'type '+leach.type}>
           {leach.identifier ? leach.identifier : <img src={leach.images[0].url} style={{height: '1em'}}/>}
         </span>
         { leach.primary_reading && <br/> }
-        { leach.primary_reading && <span style={{padding: '.2em'}}>{leach.primary_reading}</span> }
+        { leach.primary_reading && <span className='reading'>{leach.primary_reading}</span> }
         <br/>
-        <span style={{padding: '.2em'}}>{leach.primary_meaning}</span>
+        <span className='meaning'>{leach.primary_meaning}</span>
       </div> })
     }
     

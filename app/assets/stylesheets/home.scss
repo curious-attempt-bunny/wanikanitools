@@ -16,15 +16,33 @@ body {
     position: absolute;
     top:0;
     left:0;
-    color: black;
     background-color: black;
     opacity: 0;
-    transition: opacity 2s;
+    transition: opacity 2s 0s;
+
+    span {
+        color: black;
+
+        &.type {
+            transition: color 2s 0s, background-color 2s 0s;
+        }
+
+        &.reading {
+            transition: color 2s 14s, background-color 2s 14s;
+        }
+
+        &.meaning {
+            transition: color 2s 7s, background-color 2s 7s;
+        }
+    }
 
     &.active {
-        color: white;
         opacity: 1;
-
+        
+        span {
+            color: white;
+        }
+        
         .radical {
             background-color: #0af;
         }
