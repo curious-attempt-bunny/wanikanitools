@@ -3,8 +3,16 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
+    function qs(key) {
+      key = key.replace(/[*+?^$.\[\]{}()|\\\/]/g, "\\$&"); // escape RegEx control chars
+      var match = location.search.match(new RegExp("[?&]" + key + "=([^&]+)(&|$)"));
+      return match && decodeURIComponent(match[1].replace(/\+/g, " "));
+    }
+
     this.state = {
-      leaches: []
+      leaches: [],
+      api_key: qs('api_key'),
+      error: false
     }
 
     this.last_id = null;
@@ -13,9 +21,14 @@ class App extends React.Component {
 
   componentWillMount() {
     var that = this;
-    fetch('/review_data/merged')
-      .then(function(response) { return response.json(); })
-      .then(function(json) {
+    fetch('/review_data/merged'+(this.state.api_key ? '?api_key='+this.state.api_key : ''))
+      .then(function(response) {
+        if (response.status != 200) {
+          that.setState({error: true});
+          return;
+        }
+        return response.json();
+      }).then(function(json) {
         var leaches = [];
         json.data.forEach(function(item) {
           var guesses_total = item.data.meaning_correct + item.data.meaning_incorrect + item.data.reading_correct + item.data.reading_incorrect;
@@ -124,12 +137,15 @@ class App extends React.Component {
     }
     html += prefixes[kanji_count];
 
-    console.log(word,'|',spelling,'|',html);
+    // console.log(word,'|',spelling,'|',html);
 
     return html;
   }
 
   render() {
+    if (this.state.error) {
+      return <div className='error'>Failed to load. Incorrect api_key perhaps?</div>
+    }
     var that = this;
     return (
           <div className='leaches'>
@@ -145,7 +161,8 @@ class App extends React.Component {
         { leach.primary_reading && !html && <span className='reading'>{leach.primary_reading}</span> }
       </div> })
     }
-    
+
+    { !this.state.api_key && <div className='demo-mode'>Running in demo mode - please add ?api_key=YOUR_V2_API_KEY to the URL</div> }
           </div>
       )
   }
