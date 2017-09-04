@@ -64,6 +64,9 @@ class App extends React.Component {
           }, that.speed);
         }, 0);
       });
+    setInterval(function() {
+      fetch('/ping'+(that.state.api_key ? '?api_key='+that.state.api_key : '')).then(function(response) { return response.json(); }).then(function(json){});
+    }, 30000);
   }
 
   animate() {
