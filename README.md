@@ -61,3 +61,4 @@ On dokku host machine:
     bundle exec rake db:create db:migrate
     WANIKANI_V2_API_KEY=XXX bundle exec rails server
     open http://localhost:3000
+
