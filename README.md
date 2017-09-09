@@ -51,7 +51,6 @@ For a persistent cache (i.e. dokku deploys do not erase the cache):
 On dokku host machine:
 
     mkdir -p  /var/lib/dokku/data/storage/wanikanitools
-    chown -R dokku:dokku /var/lib/dokku/data/storage/wanikanitools
     chown -R 32767:32767 /var/lib/dokku/data/storage/wanikanitools
     dokku storage:mount wanikanitools /var/lib/dokku/data/storage/wanikanitools:/app/storage
     dokku config:set wanikanitools CACHE_DIR=/app/storage

@@ -13,6 +13,10 @@ module ApiConsumer
     def fetch(path)
         filename = filename_for(api_key, path)
 
+        if path == '/api/v2/subjects' && !File.exists?(filename)
+            `cp data/#{path.gsub('/', '_')} #{filename}`
+        end
+
         result = nil
         data = []
         updated_after = nil
