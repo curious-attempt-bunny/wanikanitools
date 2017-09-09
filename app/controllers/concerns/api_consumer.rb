@@ -2,7 +2,8 @@ module ApiConsumer
     def filename_for(api_key, path)
         prefix = "#{api_key}_"
         prefix = '' if path == '/api/v2/subjects'        
-        "data/#{prefix}#{path.gsub('/', '_')}" # FIXME insecure
+        stem = ENV['CACHE_DIR'] || 'data'
+        "#{stem}/#{prefix}#{path.gsub('/', '_')}" 
     end
 
     def api_key
