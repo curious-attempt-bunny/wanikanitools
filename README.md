@@ -52,8 +52,8 @@ On dokku host machine:
 
     mkdir -p  /var/lib/dokku/data/storage/wanikanitools
     chown -R 32767:32767 /var/lib/dokku/data/storage/wanikanitools
-    dokku storage:mount wanikanitools /var/lib/dokku/data/storage/wanikanitools:/app/storage
-    dokku config:set wanikanitools CACHE_DIR=/app/storage
+    dokku docker-options:add wanikanitools deploy,run "-v /var/lib/dokku/data/storage/wanikanitools:/app/storage"
+    dokku config:set wanikanitools CACHE_PATH=/app/storage
 
 ## Running locally
 
