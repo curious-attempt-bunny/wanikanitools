@@ -16,6 +16,7 @@ Rails.application.routes.draw do
   get 'api/v2/review_statistics', to: 'api_proxy#get'
 
   get 'review_data/merged', to: 'review_data#merged'
-
+  get 'srs/status', to: 'srs#status'
+  
   get 'ping', to: 'home#ping'
 end
