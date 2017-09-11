@@ -30,9 +30,13 @@ The following endpoints cache rolled-up responses from Wanikani (use HTTP GET an
 * https://wanikanitools.curiousattemptbunny.com/api/v2/summary?api_key=XXX
 * https://wanikanitools.curiousattemptbunny.com/api/v2/review_statistics?api_key=XXX
 
-In addition a merged view of the review_statistics endpoint is available via:
+In addition a (deprecated) merged view of the review_statistics endpoint is available via:
 
 * https://wanikanitools.curiousattemptbunny.com/review_data/merged?api_key=XXX
+
+An SRS level breakdown endpoint is available via (as used by https://greasyfork.org/en/scripts/32344-wanikani-srs-level-progress): 
+
+* https://wanikanitools.curiousattemptbunny.com/srs/status?api_key=XXX
 
 ### Cache invalidation
 
