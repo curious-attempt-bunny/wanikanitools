@@ -1,4 +1,5 @@
 <div>
+<div style='position: absolute; top: 1em; right: 1em;'><a href='/<%= params[:api_key] ? "?api_key=#{params[:api_key]}" : "" %>'>View as screensaver</a></div>
 <table class='dataTable'>
 <tr>
     <td>
@@ -44,11 +45,23 @@
         <% end %>
     </td>
 </tr>
+<% last_srs_stage_name = nil %>
 <% @leeches.each do |leech| %>
+<% srs_stage_name = leech[:srs_stage_name].split(' ')[0] %>
+<% if last_srs_stage_name != srs_stage_name %>
+    <tr>
+    <td span='6' style='text-align: left;'>
+        <a name='<%= srs_stage_name.downcase %>' href='#<%= srs_stage_name.downcase %>' style='font-style: italic;'>
+            <%= srs_stage_name %>
+        </a>
+    </td>
+    </tr>
+    <% last_srs_stage_name =srs_stage_name %>
+<% end %>
 <tr>
     <td class='<%= "item item#{leech[:subject_type]}" %>'><%= leech[:name] %></td>
     <td><%= leech[:worst_type] %></td>
-    <td class='<%= "srs srs#{leech[:srs_stage_name].downcase}" %>'><%= leech[:srs_stage] %></td>
+    <td class='<%= "srs srs#{srs_stage_name.downcase}" %>'><%= leech[:srs_stage] %></td>
     <td style='text-align: right;'><%= leech[:worst_incorrect] %></td>
     <td style='text-align: right;'><%= leech[:worst_current_streak] %></td>
     <td style='text-align: right;'><%= leech[:worst_score] %></td>
