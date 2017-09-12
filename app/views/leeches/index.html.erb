@@ -48,7 +48,7 @@
 <% last_srs_stage_name = nil %>
 <% @leeches.each do |leech| %>
 <% srs_stage_name = leech[:srs_stage_name].split(' ')[0] %>
-<% if last_srs_stage_name != srs_stage_name %>
+<% if last_srs_stage_name != srs_stage_name && params[:sort_by] == 'srs' %>
     <tr>
     <td span='6' style='text-align: left;'>
         <a name='<%= srs_stage_name.downcase %>' href='#<%= srs_stage_name.downcase %>' style='font-style: italic;'>
