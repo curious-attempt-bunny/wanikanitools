@@ -1,0 +1,58 @@
+<div>
+<table class='dataTable'>
+<tr>
+    <td>
+        <% unless params[:sort_by] == 'name' %>
+            <a href='?sort_by=name'>Item</a>
+        <% else %>
+            Item
+        <% end %>
+    </td>
+    <td>
+        <% unless params[:sort_by] == 'worst' %>
+            <a href='?sort_by=worst_type'>Worst</a>
+        <% else %>
+            Worst
+        <% end %>
+    </td>
+    <td>
+        <% unless params[:sort_by] == 'srs' %>
+            <a href='?sort_by=srs'>SRS</a>
+        <% else %>
+            SRS
+        <% end %>
+    </td>
+    <td>
+        <% unless params[:sort_by] == 'wrong' %>
+            <a href='?sort_by=wrong'>Wrong</a>
+        <% else %>
+            Wrong
+        <% end %>
+    </td>
+    <td>
+        <% unless params[:sort_by] == 'streak' %>
+            <a href='?sort_by=streak'>Streak</a>
+        <% else %>
+            Streak
+        <% end %>
+    </td>
+    <td>
+        <% unless params[:sort_by] == 'score' || params[:sort_by].blank? %>
+            <a href='?sort_by=score'>Score</a>
+        <% else %>
+            Score
+        <% end %>
+    </td>
+</tr>
+<% @leeches.each do |leech| %>
+<tr>
+    <td class='<%= "item item#{leech[:subject_type]}" %>'><%= leech[:name] %></td>
+    <td><%= leech[:worst_type] %></td>
+    <td class='<%= "srs srs#{leech[:srs_stage_name].downcase}" %>'><%= leech[:srs_stage] %></td>
+    <td style='text-align: right;'><%= leech[:worst_incorrect] %></td>
+    <td style='text-align: right;'><%= leech[:worst_current_streak] %></td>
+    <td style='text-align: right;'><%= leech[:worst_score] %></td>
+</tr>
+<% end %>
+</table>
+</div>

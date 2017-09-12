@@ -17,6 +17,7 @@ Rails.application.routes.draw do
 
   get 'review_data/merged', to: 'review_data#merged'
   get 'srs/status', to: 'srs#status'
-  
+  get 'leeches', to: 'leeches#index', defaults: { format: 'json' }
+
   get 'ping', to: 'home#ping'
 end

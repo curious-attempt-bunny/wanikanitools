@@ -1,0 +1,55 @@
+
+    #dataTable {
+        border-collapse: collapse;
+        display: none;
+    }
+
+    #dataTable th, td {
+        border: 1px solid black;
+        padding: 10px;
+        text-align: center;
+        font-family: sans-serif;
+        text-align: right;
+
+        a {
+            cursor: pointer;
+        }
+    }
+
+    .item {
+        background-repeat: repeat-x;
+        color: #fff;
+        font-size: 20px;
+    }
+
+    .itemvocabulary {
+        background-color: #a100f1;
+        background-image: linear-gradient(to bottom, #a0f, #9300dd);
+    }
+
+    .itemkanji {
+        background-color: #f100a1;
+        background-image: linear-gradient(to bottom, #f0a, #dd0093);
+    }
+
+    .srs {
+        text-align: center;
+        background-repeat: repeat-x;
+        color: #fff;
+    }
+
+    .srsapprentice {
+        background-color: #dd0093;
+    }
+
+    .srsguru {
+        background-color: #882d9e;
+    }
+
+    .srsmaster {
+        background-color: #294ddb;
+    }
+
+    .srsenlightened {
+        background-color: #0093dd;
+    }

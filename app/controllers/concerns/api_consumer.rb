@@ -75,4 +75,25 @@ module ApiConsumer
 
         return result
     end
+
+    def convert_to_map_by_id(json)
+        map = Hash.new
+
+        json['data'].each do |item|
+            map[item['id']] = item
+        end
+
+        map
+    end
+
+    def convert_to_map_by_data_subject_id(json)
+        map = Hash.new
+
+        json['data'].each do |item|
+            map[item['data']['subject_id']] = item
+        end
+
+        map
+    end
+
 end
