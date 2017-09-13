@@ -6,15 +6,6 @@ module LeechesConcern
     
         leeches = []
 
-        # if(item.user_specific != null && !item.user_specific.burned) {
-        #     var itemName = item.character;
-        #     var deets = item.user_specific;
-        #     var meaningScore = (deets.meaning_incorrect / deets.meaning_current_streak).toFixed(1);
-        #     var readingScore = (deets.reading_incorrect / deets.reading_current_streak).toFixed(1);
-        #     result.push({itemType: itemType, item: itemName, type: "meaning", srs: deets.srs_numeric, wrongCount: deets.meaning_incorrect, score: meaningScore});
-        #     result.push({itemType: itemType, item: itemName, type: "reading", srs: deets.srs_numeric, wrongCount: deets.reading_incorrect, score: readingScore});
-        # }
-
         review_statistics['data'].each do |item|
             review_data = item['data']
             next if review_data['subject_type'] == 'radical'
@@ -35,8 +26,6 @@ module LeechesConcern
                 worst_current_streak = review_data['reading_current_streak']
             end
 
-            # raise assignments[review_data['subject_id']].inspect
-
             leech = {
                 subject_id: review_data['subject_id'],
                 subject_type: review_data['subject_type'],
@@ -49,16 +38,11 @@ module LeechesConcern
                 worst_current_streak: worst_current_streak
             }
 
-            leeches << leech
+            leeches << leech if worst_score >= 0.5
         end
 
         leeches.sort_by! { |item| -item[:worst_score] }
-        leeches = leeches[0...50]
-
-        leeches.sort_by! { |item| item[:name] } if params[:sort_by] == 'name'
-        leeches.sort_by! { |item| item[:worst_type] } if params[:sort_by] == 'worst'
-        leeches.sort_by! { |item| -item[:srs_stage] } if params[:sort_by] == 'srs'
-        leeches.sort_by! { |item| item[:worst_current_streak] } if params[:sort_by] == 'streak'
+        # leeches = leeches[0...50]
 
         leeches
     end

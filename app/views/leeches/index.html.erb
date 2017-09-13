@@ -1,54 +1,32 @@
 <div>
 <div style='position: absolute; top: 1em; right: 1em;'><a href='/<%= params[:api_key] ? "?api_key=#{params[:api_key]}" : "" %>'>View as screensaver</a></div>
-<table class='dataTable'>
+<% ['name', 'worst', 'srs', 'wrong', 'streak', 'score'].each do |sort| %>
+<table class='dataTable type_<%= sort %>' style='<%= (sort == params[:sort_by] ? '' : 'display: none;') %>'>
 <tr>
-    <td>
-        <% unless params[:sort_by] == 'name' %>
-            <a href='?sort_by=name'>Item</a>
-        <% else %>
-            Item
-        <% end %>
-    </td>
-    <td>
-        <% unless params[:sort_by] == 'worst' %>
-            <a href='?sort_by=worst_type'>Worst</a>
-        <% else %>
-            Worst
-        <% end %>
-    </td>
-    <td>
-        <% unless params[:sort_by] == 'srs' %>
-            <a href='?sort_by=srs'>SRS</a>
-        <% else %>
-            SRS
-        <% end %>
-    </td>
-    <td>
-        <% unless params[:sort_by] == 'wrong' %>
-            <a href='?sort_by=wrong'>Wrong</a>
-        <% else %>
-            Wrong
-        <% end %>
-    </td>
-    <td>
-        <% unless params[:sort_by] == 'streak' %>
-            <a href='?sort_by=streak'>Streak</a>
-        <% else %>
-            Streak
-        <% end %>
-    </td>
-    <td>
-        <% unless params[:sort_by] == 'score' || params[:sort_by].blank? %>
-            <a href='?sort_by=score'>Score</a>
-        <% else %>
-            Score
-        <% end %>
-    </td>
+    <% ['Item', 'Worst', 'SRS', 'Wrong', 'Streak', 'Score'].each do |sort_name| %>
+        <% sort_type = sort_name == 'Item' ? 'name' : sort_name.downcase %>
+        <td>
+            <% if sort_type != sort %>
+                <% path = "?sort_by=#{sort_type}"+(params[:api_key] ? "&api_key=#{params[:api_key]}" : '') %>
+                <a href='<%= path %>' onclick='$(".dataTable").hide(); $(".type_<%= sort_type %>").show(); window.history.pushState(null, null, "<%= path %>"); return false;' style='color: white;'>
+                    <%= sort_name %>
+                </a>&nbsp;&nbsp;
+            <% else %>
+                <%= sort_name %>&nbsp;<span style='font-size: 0.5em; vertical-align: middle;'>▼</span>
+            <% end %>
+        </td>
+    <% end %>
 </tr>
 <% last_srs_stage_name = nil %>
-<% @leeches.each do |leech| %>
+<% sorted = @leeches %>
+<% sorted = sorted.sort_by { |item| [item[:name], -item[:worst_score]] } if sort == 'name' %>
+<% sorted = sorted.sort_by { |item| [item[:worst_type], -item[:worst_score]] } if sort == 'worst' %>
+<% sorted = sorted.sort_by { |item| [-item[:srs_stage], -item[:worst_score]] } if sort == 'srs' %>
+<% sorted = sorted.sort_by { |item| [-item[:worst_incorrect], -item[:worst_score]] } if sort == 'wrong' %>
+<% sorted = sorted.sort_by { |item| [item[:worst_current_streak], -item[:worst_score]] } if sort == 'streak' %>
+<% sorted.each do |leech| %>
 <% srs_stage_name = leech[:srs_stage_name].split(' ')[0] %>
-<% if last_srs_stage_name != srs_stage_name && params[:sort_by] == 'srs' %>
+<% if last_srs_stage_name != srs_stage_name && sort == 'srs' %>
     <tr>
     <td span='6' style='text-align: left;'>
         <a name='<%= srs_stage_name.downcase %>' href='#<%= srs_stage_name.downcase %>' style='font-style: italic;'>
@@ -56,7 +34,7 @@
         </a>
     </td>
     </tr>
-    <% last_srs_stage_name =srs_stage_name %>
+    <% last_srs_stage_name = srs_stage_name %>
 <% end %>
 <tr>
     <td class='<%= "item item#{leech[:subject_type]}" %>'><%= leech[:name] %></td>
@@ -68,4 +46,5 @@
 </tr>
 <% end %>
 </table>
+<% end %>
 </div>
