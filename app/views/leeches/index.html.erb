@@ -12,7 +12,12 @@
                     <%= sort_name %>
                 </a>&nbsp;&nbsp;
             <% else %>
-                <%= sort_name %>&nbsp;<span style='font-size: 0.5em; vertical-align: middle;'>▼</span>
+                <% if sort_type == 'score' %>
+                    <span title='score = wrong / (streak ^ 1.5)'>
+                <% else %>
+                    <span>
+                <% end %>
+                <%= sort_name %></span>&nbsp;<span style='font-size: 0.5em; vertical-align: middle;'>▼</span>
             <% end %>
         </td>
     <% end %>
@@ -42,7 +47,7 @@
     <td class='<%= "srs srs#{srs_stage_name.downcase}" %>'><%= leech[:srs_stage] %></td>
     <td style='text-align: right;'><%= leech[:worst_incorrect] %></td>
     <td style='text-align: right;'><%= leech[:worst_current_streak] %></td>
-    <td style='text-align: right;'><%= leech[:worst_score] %></td>
+    <td style='text-align: right;'><span title='<%= "#{leech[:worst_incorrect]} / (#{leech[:worst_current_streak]} ^ 1.5) = #{leech[:worst_score]}" %>'><%= leech[:worst_score] %></span></td>
 </tr>
 <% end %>
 </table>
