@@ -12,8 +12,8 @@ module LeechesConcern
             next if review_data['meaning_incorrect'] + review_data['meaning_correct'] == 0
             next if assignments[review_data['subject_id']]['burned_at'].present?
             
-            meaning_score = (review_data['meaning_incorrect'] / (review_data['meaning_current_streak'] || 0.5).to_f).round(1)
-            reading_score = (review_data['reading_incorrect'] / (review_data['reading_current_streak'] || 0.5).to_f).round(1)
+            meaning_score = (review_data['meaning_incorrect'] / ((review_data['meaning_current_streak'] || 0.5)**1.5)).round(1)
+            reading_score = (review_data['reading_incorrect'] / ((review_data['reading_current_streak'] || 0.5)**1.5)).round(1)
             raise item.inspect if reading_score.nan?
             worst_score = meaning_score
             worst_type = 'meaning'
@@ -38,7 +38,7 @@ module LeechesConcern
                 worst_current_streak: worst_current_streak
             }
 
-            leeches << leech if worst_score >= 0.5
+            leeches << leech if worst_score >= 1.0
         end
 
         leeches.sort_by! { |item| -item[:worst_score] }

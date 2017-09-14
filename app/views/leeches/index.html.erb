@@ -1,7 +1,7 @@
 <div>
 <div style='position: absolute; top: 1em; right: 1em;'><a href='/<%= params[:api_key] ? "?api_key=#{params[:api_key]}" : "" %>'>View as screensaver</a></div>
 <% ['name', 'worst', 'srs', 'wrong', 'streak', 'score'].each do |sort| %>
-<table class='dataTable type_<%= sort %>' style='<%= (sort == params[:sort_by] ? '' : 'display: none;') %>'>
+<table class='dataTable type_<%= sort %>' style='<%= (sort == (params[:sort_by] || 'score') ? '' : 'display: none;') %>'>
 <tr>
     <% ['Item', 'Worst', 'SRS', 'Wrong', 'Streak', 'Score'].each do |sort_name| %>
         <% sort_type = sort_name == 'Item' ? 'name' : sort_name.downcase %>
