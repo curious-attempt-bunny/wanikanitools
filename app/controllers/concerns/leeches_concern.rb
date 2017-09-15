@@ -10,7 +10,8 @@ module LeechesConcern
             review_data = item['data']
             next if review_data['subject_type'] == 'radical'
             next if review_data['meaning_incorrect'] + review_data['meaning_correct'] == 0
-            next if assignments[review_data['subject_id']]['burned_at'].present?
+            next if assignments[review_data['subject_id']]['data']['burned_at'].present?
+            next if assignments[review_data['subject_id']]['data']['passed'] == false
             
             meaning_score = (review_data['meaning_incorrect'] / ((review_data['meaning_current_streak'] || 0.5)**1.5)).round(1)
             reading_score = (review_data['reading_incorrect'] / ((review_data['reading_current_streak'] || 0.5)**1.5)).round(1)
