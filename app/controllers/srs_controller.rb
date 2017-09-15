@@ -18,6 +18,7 @@ class SrsController < ApplicationController
         end
 
         status = {
+            leeches_total: leeches.size,
             srs_level_totals: srs_level_totals,
             srs_level_leeches_totals: leech_totals,
             levels: {
