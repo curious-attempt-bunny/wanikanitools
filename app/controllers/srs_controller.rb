@@ -24,37 +24,37 @@ class SrsController < ApplicationController
                 unstarted: {
                     srs_level_totals: srs_level_totals[0...1],
                     total: srs_level_totals[0],
-                    srs_level_leeches_total: leech_totals[0...1],
+                    srs_level_leeches_totals: leech_totals[0...1],
                     leeches_total: leech_totals[0]
                 },
                 apprentice: {
                     srs_level_totals: srs_level_totals[1...5],
                     total: srs_level_totals[1] + srs_level_totals[2] + srs_level_totals[3] + srs_level_totals[4],
-                    srs_level_leeches_total: leech_totals[1...5],
+                    srs_level_leeches_totals: leech_totals[1...5],
                     leeches_total: leech_totals[1] + leech_totals[2] + leech_totals[3] + leech_totals[4]
                 },
                 guru: {
                     srs_level_totals: srs_level_totals[5...7],
                     total: srs_level_totals[5] + srs_level_totals[6],
-                    srs_level_leeches_total: leech_totals[5...7],
+                    srs_level_leeches_totals: leech_totals[5...7],
                     leeches_total: leech_totals[5] + leech_totals[6]
                 },
                 master: {
                     srs_level_totals: srs_level_totals[7...8],
                     total: srs_level_totals[7],  
-                    srs_level_leeches_total: leech_totals[7...8],
+                    srs_level_leeches_totals: leech_totals[7...8],
                     leeches_total: leech_totals[7]  
                 },
                 enlightened: {
                     srs_level_totals: srs_level_totals[8...9],
                     total: srs_level_totals[8],
-                    srs_level_leeches_total: leech_totals[8...9],
+                    srs_level_leeches_totals: leech_totals[8...9],
                     leeches_total: leech_totals[8]  
                 },
                 burned: {
                     srs_level_totals: srs_level_totals[9...10],
                     leeches_total: srs_level_totals[9],
-                    srs_level_leeches_total: 0,
+                    srs_level_leeches_totals: [0],
                     leeches_total: 0
                 },
                 order: ['apprentice', 'guru', 'master', 'enlightened', 'burned']
