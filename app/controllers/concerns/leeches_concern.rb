@@ -10,8 +10,10 @@ module LeechesConcern
             review_data = item['data']
             next if review_data['subject_type'] == 'radical'
             next if review_data['meaning_incorrect'] + review_data['meaning_correct'] == 0
-            next if assignments[review_data['subject_id']]['data']['burned_at'].present?
-            next if assignments[review_data['subject_id']]['data']['passed'] == false
+            assignment = assignments[review_data['subject_id']]
+            next unless assignment.present?
+            next if assignment['data']['burned_at'].present?
+            next if assignment['data']['passed'] == false
             
             meaning_score = (review_data['meaning_incorrect'] / ((review_data['meaning_current_streak'] || 0.5)**1.5)).round(1)
             reading_score = (review_data['reading_incorrect'] / ((review_data['reading_current_streak'] || 0.5)**1.5)).round(1)
@@ -31,8 +33,8 @@ module LeechesConcern
                 subject_id: review_data['subject_id'],
                 subject_type: review_data['subject_type'],
                 name: subjects[review_data['subject_id']]['data']['character'] || subjects[review_data['subject_id']]['data']['characters'],
-                srs_stage: assignments[review_data['subject_id']]['data']['srs_stage'],
-                srs_stage_name: assignments[review_data['subject_id']]['data']['srs_stage_name'],
+                srs_stage: assignment['data']['srs_stage'],
+                srs_stage_name: assignment['data']['srs_stage_name'],
                 worst_score: worst_score,
                 worst_type: worst_type,
                 worst_incorrect: worst_incorrect,
