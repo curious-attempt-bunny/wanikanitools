@@ -21,7 +21,7 @@ class App extends React.Component {
 
   componentWillMount() {
     var that = this;
-    fetch('/review_data/merged'+(this.state.api_key ? '?api_key='+this.state.api_key : ''))
+    fetch('/leeches'+(this.state.api_key ? '?api_key='+this.state.api_key : ''))
       .then(function(response) {
         if (response.status != 200) {
           that.setState({error: true});
@@ -30,29 +30,17 @@ class App extends React.Component {
         return response.json();
       }).then(function(json) {
         var leaches = [];
-        json.data.forEach(function(item) {
-          var guesses_total = item.data.meaning_correct + item.data.meaning_incorrect + item.data.reading_correct + item.data.reading_incorrect;
-          if (guesses_total > 0 && (item.data.meaning_current_streak < 3 || (item.data.reading_current_streak < 3 && item.data.subject_type != 'radical'))) {
-            var score = (item.data.meaning_correct + item.data.reading_correct) / (guesses_total + 1.0);
-            var identifier = item.data.subject.data.character || item.data.subject.data.slug || item.data.subject.data.characters;
-            var primary_reading;
-            if (item.data.subject.data.readings) {
-              primary_reading = item.data.subject.data.readings.filter(function(reading) { return reading.primary; })[0].reading;
-            }
-            var primary_meaning = item.data.subject.data.meanings.filter(function(meaning) { return meaning.primary; })[0].meaning;
-            var leach = {
-              id: item.data.subject_id,
-              identifier: item.data.subject.data.character_images && item.data.subject.data.character_images.length > 0 ? null : identifier,
-              images: item.data.subject.data.character_images,
-              score: score,
-              primary_reading: primary_reading,
-              primary_meaning: primary_meaning,
-              type: item.data.subject_type,
-              item: item
-            }
-            // console.log(leach, item);
-            leaches.push(leach);
+        json.forEach(function(item) {
+          var leach = {
+            id: item.subject_id,
+            identifier: item.name,
+            score: item.worst_score,
+            primary_reading: item.primary_reading,
+            primary_meaning: item.primary_meaning,
+            type: item.subject_type
           }
+          // console.log(leach, item);
+          leaches.push(leach);
         });
         leaches = leaches.sort(function(a,b) { return a.score - b.score; });
         that.setState({leaches: leaches.slice(0,100)});

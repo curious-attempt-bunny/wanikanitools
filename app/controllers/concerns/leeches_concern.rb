@@ -29,6 +29,15 @@ module LeechesConcern
                 worst_current_streak = review_data['reading_current_streak']
             end
 
+            primary_reading = nil
+            if subjects[review_data['subject_id']]['data']['readings']
+                primary_reading = subjects[review_data['subject_id']]['data']['readings'].find { |reading| reading['primary'] }['reading']
+            end
+            primary_meaning = nil
+            if subjects[review_data['subject_id']]['data']['meanings']
+                primary_meaning = subjects[review_data['subject_id']]['data']['meanings'].find { |meaning| meaning['primary'] }['meaning']
+            end
+
             leech = {
                 subject_id: review_data['subject_id'],
                 subject_type: review_data['subject_type'],
@@ -38,8 +47,12 @@ module LeechesConcern
                 worst_score: worst_score,
                 worst_type: worst_type,
                 worst_incorrect: worst_incorrect,
-                worst_current_streak: worst_current_streak
+                worst_current_streak: worst_current_streak,
+                primary_meaning: primary_meaning
             }
+            if (primary_reading)
+                leech[:primary_reading] = primary_reading
+            end
 
             leeches << leech if worst_score >= 1.0
         end
