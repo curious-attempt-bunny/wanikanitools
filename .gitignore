@@ -19,5 +19,8 @@
 
 vendor/bundle
 
-data/3d2*
+data
 .DS_Store
+.ipynb_checkpoints
+*.ipynb
+scrape.rb
