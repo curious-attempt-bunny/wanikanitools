@@ -10,7 +10,66 @@ module ApiConsumer
         api_key = params[:api_key] || ENV['WANIKANI_V2_API_KEY']
     end    
 
-    def fetch(path)
+    def http_get(url, path, prefetched={})
+        puts ">>> prefetched.keys = #{prefetched.keys}"
+        if prefetched.has_key?(path)
+            puts "*** PREFETCHED #{path} ***"
+            return prefetched[path]
+        end
+
+        Typhoeus::Config.user_agent = 'Wanikanitools/alpha (https://github.com/curious-attempt-bunny/wanikanitools/issues)'
+        typhoeus_response = Typhoeus.get(url, headers: { Authorization: "Token token=#{api_key}" })
+        raise typhoeus_response.code.to_s if typhoeus_response.code != 200
+
+        typhoeus_response.body
+    end
+
+    def prefetch(paths)
+        hydra = Typhoeus::Hydra.hydra
+        
+        cache = {}
+        paths.each do |path|
+            # TODO DRY
+            filename = filename_for(api_key, path)
+            
+            if path == '/api/v2/subjects' && !File.exists?(filename)
+                `cp data/#{path.gsub('/', '_')} #{filename}`
+            end
+
+            result = nil
+            data = []
+            updated_after = nil
+            if File.exists?(filename)
+                puts "Cache hit ?"
+                result = JSON.parse(File.read(filename))
+                updated_after = result['data_updated_at'] if result['object'] == 'collection'
+            else
+                puts "Cache miss"
+            end
+
+            url = "https://www.wanikani.com#{path}#{updated_after ? "?updated_after=#{updated_after}" : ''}"
+
+            request = Typhoeus::Request.new(
+                url,
+                method: :get,
+                headers: { Authorization: "Token token=#{api_key}" }
+            )
+            hydra.queue(request)
+            cache[path] = request
+        end
+
+        hydra.run
+
+        paths.each do |path|
+            response = cache[path].response
+            raise response.code.to_s if response.code != 200
+            cache[path] = response.body
+        end
+
+        cache
+    end
+
+    def fetch(path, prefetched = {})
         filename = filename_for(api_key, path)
 
         if path == '/api/v2/subjects' && !File.exists?(filename)
@@ -32,7 +91,7 @@ module ApiConsumer
         while url
             cmd = "curl -H 'Authorization: Token token=#{api_key}' '#{url}'" # FIXME insecure
             puts ">>> #{cmd}"
-            response = `#{cmd}`
+            response = http_get(url, path, prefetched)
             json = JSON.parse(response)
 
             if result && result['object'] == 'collection'

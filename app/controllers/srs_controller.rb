@@ -3,8 +3,13 @@ class SrsController < ApplicationController
     include LeechesConcern
 
     def status
-        json = fetch('/api/v2/assignments')
-        leeches = leeches({assignments: json}).select { |item| item[:worst_score] > 0.5 }
+        prefetched = prefetch([
+            '/api/v2/subjects',
+            '/api/v2/review_statistics',
+            '/api/v2/assignments'
+        ])
+        json = fetch('/api/v2/assignments', prefetched)
+        leeches = leeches(assignments: json, prefetched: prefetched).select { |item| item[:worst_score] > 0.5 }
 
         srs_level_totals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         leech_totals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]

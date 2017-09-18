@@ -3,7 +3,13 @@ class LeechesController < ApplicationController
     include LeechesConcern
 
     def index
-        @leeches = leeches
+        prefetched = prefetch([
+            '/api/v2/subjects',
+            '/api/v2/review_statistics',
+            '/api/v2/assignments'
+        ])
+
+        @leeches = leeches(prefetched: prefetched)
 
         respond_to do |format|
             format.html

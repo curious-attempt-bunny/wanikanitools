@@ -1,8 +1,8 @@
 module LeechesConcern
-    def leeches(options = Hash.new)
-        review_statistics = options[:review_statistics] || fetch('/api/v2/review_statistics')
-        assignments = convert_to_map_by_data_subject_id(options[:assignments] || fetch('/api/v2/assignments'))
-        subjects = convert_to_map_by_id(options[:subjects] || fetch('/api/v2/subjects'))
+    def leeches(options = {prefetched: {}})
+        review_statistics = options[:review_statistics] || fetch('/api/v2/review_statistics', options[:prefetched])
+        assignments = convert_to_map_by_data_subject_id(options[:assignments] || fetch('/api/v2/assignments', options[:prefetched]))
+        subjects = convert_to_map_by_id(options[:subjects] || fetch('/api/v2/subjects', options[:prefetched]))
     
         leeches = []
 
