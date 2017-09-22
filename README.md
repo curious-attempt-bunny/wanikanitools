@@ -48,7 +48,7 @@ See https://github.com/curious-attempt-bunny/dokku-rails-omniauth-bootstrap-reac
 
     dokku config:set --no-restart wanikanitools WANIKANI_V2_API_KEY=XXX
 
-#### Persistent caches
+### Persistent caches
 
 For a persistent cache (i.e. dokku deploys do not erase the cache):
 
@@ -58,6 +58,10 @@ On dokku host machine:
     chown -R 32767:32767 /var/lib/dokku/data/storage/wanikanitools
     dokku docker-options:add wanikanitools deploy,run "-v /var/lib/dokku/data/storage/wanikanitools:/app/storage"
     dokku config:set wanikanitools CACHE_PATH=/app/storage
+
+### Improved performance
+
+    dokku config:set wanikanitools RACK_ENV=production WEB_CONCURRENCY=5
 
 ## Running locally
 
