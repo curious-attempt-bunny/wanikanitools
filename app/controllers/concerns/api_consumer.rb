@@ -97,10 +97,35 @@ module ApiConsumer
         end
 
         url = "https://www.wanikani.com#{path}#{updated_after ? "?updated_after=#{updated_after}" : ''}"
-        while url
+        
+        cmd = "curl -H 'Authorization: Token token=#{api_key}' '#{url}'" # FIXME insecure
+        puts ">>> #{cmd}"
+        response = http_get(url, path, prefetched)
+        # puts response
+        # File.write('/tmp/response.json', response)
+        # exit(0)
+        # puts response
+        json = JSON.parse(response)
+
+        if result && result['object'] == 'collection'
+            result['data_updated_at'] = json['data_updated_at']
+            puts "data_updated_at is #{json['data_updated_at']} vs #{updated_after} -- #{updated_after == result['data_updated_at'] ? 'same' : 'different'}"
+            data.concat(json['data'])
+        else    
+            result = json
+        end
+    
+        ((json['pages']['current'].to_i+1)..json['pages']['last'].to_i).each do |page|
+            params = CGI::parse(URI(json['pages']['next_url']).query)
+            params['page'][0] = page
+            # print "Adjusted #{url} to "
+            url = URI(url).tap { |uri| uri.query = URI.encode_www_form(params) }.to_s
+            # puts url
+
             cmd = "curl -H 'Authorization: Token token=#{api_key}' '#{url}'" # FIXME insecure
             puts ">>> #{cmd}"
             response = http_get(url, path, prefetched)
+            
             json = JSON.parse(response)
 
             if result && result['object'] == 'collection'
@@ -109,11 +134,6 @@ module ApiConsumer
                 data.concat(json['data'])
             else    
                 result = json
-            end
-            
-            url = nil
-            if json['pages'] && json['pages']['next_url']
-                url = json['pages']['next_url']
             end
         end
 
