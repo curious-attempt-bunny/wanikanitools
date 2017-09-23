@@ -123,25 +123,27 @@ module ApiConsumer
         if json['pages']
             NewRelic::Agent.add_custom_attributes({"pages/#{path}": json['pages']['last'].to_i})
         
-            ((json['pages']['current'].to_i+1)..json['pages']['last'].to_i).each do |page|
-                params = CGI::parse(URI(json['pages']['next_url']).query)
-                params['page'][0] = page
-                # print "Adjusted #{url} to "
-                url = URI(url).tap { |uri| uri.query = URI.encode_www_form(params) }.to_s
-                # puts url
+            if json['pages']['current'].to_i < json['pages']['last'].to_i
+                ((json['pages']['current'].to_i+1)..json['pages']['last'].to_i).each do |page|
+                    params = CGI::parse(URI(json['pages']['next_url']).query)
+                    params['page'][0] = page
+                    # print "Adjusted #{url} to "
+                    url = URI(url).tap { |uri| uri.query = URI.encode_www_form(params) }.to_s
+                    # puts url
 
-                cmd = "curl -H 'Authorization: Token token=#{api_key}' '#{url}'" # FIXME insecure
-                puts ">>> #{cmd}"
-                response = http_get(url, path, prefetched)
-                
-                json = JSON.parse(response)
+                    cmd = "curl -H 'Authorization: Token token=#{api_key}' '#{url}'" # FIXME insecure
+                    puts ">>> #{cmd}"
+                    response = http_get(url, path, prefetched)
+                    
+                    json = JSON.parse(response)
 
-                if result && result['object'] == 'collection'
-                    result['data_updated_at'] = json['data_updated_at']
-                    puts "data_updated_at is #{json['data_updated_at']} vs #{updated_after} -- #{updated_after == result['data_updated_at'] ? 'same' : 'different'}"
-                    data.concat(json['data'])
-                else    
-                    result = json
+                    if result && result['object'] == 'collection'
+                        result['data_updated_at'] = json['data_updated_at']
+                        puts "data_updated_at is #{json['data_updated_at']} vs #{updated_after} -- #{updated_after == result['data_updated_at'] ? 'same' : 'different'}"
+                        data.concat(json['data'])
+                    else    
+                        result = json
+                    end
                 end
             end
         end
