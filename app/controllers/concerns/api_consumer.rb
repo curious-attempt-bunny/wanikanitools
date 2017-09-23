@@ -11,12 +11,18 @@ module ApiConsumer
     end    
 
     def http_get(url, path, prefetched={})
-        puts ">>> prefetched.keys = #{prefetched.keys}"
-        if prefetched.has_key?(path)
+        # puts ">>> prefetched.keys = #{prefetched.keys}"
+        if prefetched.has_key?(url)
+            NewRelic::Agent.add_custom_attributes({"prefetch/#{url}": 1})
             puts "*** PREFETCHED #{path} ***"
-            return prefetched[path]
+            return prefetched[url]
+        else
+            NewRelic::Agent.add_custom_attributes({"prefetch/#{url}": 0})
         end
 
+        cmd = "curl -H 'Authorization: Token token=#{api_key}' '#{url}'"
+        puts ">>> #{cmd}"
+        
         Typhoeus::Config.user_agent = 'Wanikanitools/alpha (https://github.com/curious-attempt-bunny/wanikanitools/issues)'
         typhoeus_response = Typhoeus.get(url, headers: { Authorization: "Token token=#{api_key}" })
         raise typhoeus_response.code.to_s if typhoeus_response.code != 200
@@ -39,9 +45,9 @@ module ApiConsumer
             result = nil
             data = []
             updated_after = nil
-            puts "filename: #{filename}"
+            # puts "filename: #{filename}"
             if File.exists?(filename)
-                puts "Cache hit ?"
+                # puts "Cache hit ?"
                 begin
                     result = JSON.parse(File.read(filename))
                     updated_after = result['data_updated_at'] if result['object'] == 'collection'
@@ -49,7 +55,7 @@ module ApiConsumer
                     puts e.message
                 end
             else
-                puts "Cache miss"
+                # puts "Cache miss"
             end
 
             url = "https://www.wanikani.com#{path}#{updated_after ? "?updated_after=#{updated_after}" : ''}"
@@ -60,16 +66,16 @@ module ApiConsumer
                 headers: { Authorization: "Token token=#{api_key}" }
             )
             hydra.queue(request)
-            cache[path] = request
+            cache[url] = request
         end
 
         hydra.run
 
-        paths.each do |path|
-            response = cache[path].response
-            NewRelic::Agent.add_custom_attributes({"prefetch_status_code/#{path}": response.code})
+        cache.keys.each do |url|
+            response = cache[url].response
+            NewRelic::Agent.add_custom_attributes({"prefetch_status_code/#{URI(url).path}": response.code})
             raise response.code.to_s if response.code != 200
-            cache[path] = response.body
+            cache[url] = response.body
         end
 
         cache
@@ -103,8 +109,6 @@ module ApiConsumer
 
         url = "https://www.wanikani.com#{path}#{updated_after ? "?updated_after=#{updated_after}" : ''}"
         
-        cmd = "curl -H 'Authorization: Token token=#{api_key}' '#{url}'" # FIXME insecure
-        puts ">>> #{cmd}"
         response = http_get(url, path, prefetched)
         # puts response
         # File.write('/tmp/response.json', response)
