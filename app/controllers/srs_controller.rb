@@ -7,6 +7,8 @@ class SrsController < ApplicationController
     add_method_tracer :prefetch
     add_method_tracer :fetch
     add_method_tracer :leeches
+    add_method_tracer :convert_to_map_by_id
+    add_method_tracer :convert_to_map_by_data_subject_id
 
     def status
         prefetched = prefetch([
