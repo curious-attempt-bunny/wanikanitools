@@ -67,6 +67,7 @@ module ApiConsumer
 
         paths.each do |path|
             response = cache[path].response
+            NewRelic::Agent.add_custom_attributes({"prefetch_status_code/#{path}": response.code})
             raise response.code.to_s if response.code != 200
             cache[path] = response.body
         end
@@ -85,14 +86,18 @@ module ApiConsumer
         data = []
         updated_after = nil
         if File.exists?(filename)
+            NewRelic::Agent.add_custom_attributes({"cache_hit/#{path}": 1})
             puts "Cache hit ?"
             begin
                 result = JSON.parse(File.read(filename))
                 updated_after = result['data_updated_at'] if result['object'] == 'collection'
+                NewRelic::Agent.add_custom_attributes({"json_valid/#{path}": 1})
             rescue JSON::ParserError => e
                 puts e.message
+                NewRelic::Agent.add_custom_attributes({"json_valid/#{path}": 0})
             end
         else
+            NewRelic::Agent.add_custom_attributes({"cache_hit/#{path}": 0})
             puts "Cache miss"
         end
 
@@ -115,29 +120,35 @@ module ApiConsumer
             result = json
         end
     
-        ((json['pages']['current'].to_i+1)..json['pages']['last'].to_i).each do |page|
-            params = CGI::parse(URI(json['pages']['next_url']).query)
-            params['page'][0] = page
-            # print "Adjusted #{url} to "
-            url = URI(url).tap { |uri| uri.query = URI.encode_www_form(params) }.to_s
-            # puts url
+        if json['pages']
+            NewRelic::Agent.add_custom_attributes({"pages/#{path}": json['pages']['last'].to_i})
+        
+            ((json['pages']['current'].to_i+1)..json['pages']['last'].to_i).each do |page|
+                params = CGI::parse(URI(json['pages']['next_url']).query)
+                params['page'][0] = page
+                # print "Adjusted #{url} to "
+                url = URI(url).tap { |uri| uri.query = URI.encode_www_form(params) }.to_s
+                # puts url
 
-            cmd = "curl -H 'Authorization: Token token=#{api_key}' '#{url}'" # FIXME insecure
-            puts ">>> #{cmd}"
-            response = http_get(url, path, prefetched)
-            
-            json = JSON.parse(response)
+                cmd = "curl -H 'Authorization: Token token=#{api_key}' '#{url}'" # FIXME insecure
+                puts ">>> #{cmd}"
+                response = http_get(url, path, prefetched)
+                
+                json = JSON.parse(response)
 
-            if result && result['object'] == 'collection'
-                result['data_updated_at'] = json['data_updated_at']
-                puts "data_updated_at is #{json['data_updated_at']} vs #{updated_after} -- #{updated_after == result['data_updated_at'] ? 'same' : 'different'}"
-                data.concat(json['data'])
-            else    
-                result = json
+                if result && result['object'] == 'collection'
+                    result['data_updated_at'] = json['data_updated_at']
+                    puts "data_updated_at is #{json['data_updated_at']} vs #{updated_after} -- #{updated_after == result['data_updated_at'] ? 'same' : 'different'}"
+                    data.concat(json['data'])
+                else    
+                    result = json
+                end
             end
         end
 
         if !File.exists?(filename) || updated_after != result['data_updated_at']
+            NewRelic::Agent.add_custom_attributes({"cache_update/#{path}": 1})
+
             puts "Updating cache"
 
             if result['object'] == 'collection'
@@ -158,6 +169,7 @@ module ApiConsumer
             File.write(filename, JSON.generate(result))
             File.utime(time, time, filename)
         else
+            NewRelic::Agent.add_custom_attributes({"cache_update/#{path}": 0})
             puts "No update to cache"
         end
 

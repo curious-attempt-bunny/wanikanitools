@@ -1,6 +1,12 @@
+require 'new_relic/agent/method_tracer'
+
 class SrsController < ApplicationController
     include ApiConsumer
     include LeechesConcern
+
+    add_method_tracer :prefetch
+    add_method_tracer :fetch
+    add_method_tracer :leeches
 
     def status
         prefetched = prefetch([
