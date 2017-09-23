@@ -39,10 +39,15 @@ module ApiConsumer
             result = nil
             data = []
             updated_after = nil
+            puts "filename: #{filename}"
             if File.exists?(filename)
                 puts "Cache hit ?"
-                result = JSON.parse(File.read(filename))
-                updated_after = result['data_updated_at'] if result['object'] == 'collection'
+                begin
+                    result = JSON.parse(File.read(filename))
+                    updated_after = result['data_updated_at'] if result['object'] == 'collection'
+                rescue JSON::ParserError => e
+                    puts e.message
+                end
             else
                 puts "Cache miss"
             end
@@ -81,8 +86,12 @@ module ApiConsumer
         updated_after = nil
         if File.exists?(filename)
             puts "Cache hit ?"
-            result = JSON.parse(File.read(filename))
-            updated_after = result['data_updated_at'] if result['object'] == 'collection'
+            begin
+                result = JSON.parse(File.read(filename))
+                updated_after = result['data_updated_at'] if result['object'] == 'collection'
+            rescue JSON::ParserError => e
+                puts e.message
+            end
         else
             puts "Cache miss"
         end
