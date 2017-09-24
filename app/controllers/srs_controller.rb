@@ -12,6 +12,7 @@ class SrsController < ApplicationController
 
         srs_level_totals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         leech_totals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        srs_level_leech_trends = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
         id_maps['/api/v2/assignments'].each do |id, item|
             srs_level_totals[item['data']['srs_stage']] += 1
@@ -19,6 +20,7 @@ class SrsController < ApplicationController
 
         leeches.each do |item|
             leech_totals[item[:srs_stage]] += 1
+            srs_level_leech_trends[item[:srs_stage]] +=  item[:trend]
         end
 
         status = {
@@ -30,37 +32,49 @@ class SrsController < ApplicationController
                     srs_level_totals: srs_level_totals[0...1],
                     total: srs_level_totals[0],
                     srs_level_leeches_totals: leech_totals[0...1],
-                    leeches_total: leech_totals[0]
+                    leeches_total: leech_totals[0],
+                    srs_level_leech_trends: srs_level_leech_trends[0...1],
+                    srs_level_leech_total: srs_level_leech_trends[0]
                 },
                 apprentice: {
                     srs_level_totals: srs_level_totals[1...5],
                     total: srs_level_totals[1] + srs_level_totals[2] + srs_level_totals[3] + srs_level_totals[4],
                     srs_level_leeches_totals: leech_totals[1...5],
-                    leeches_total: leech_totals[1] + leech_totals[2] + leech_totals[3] + leech_totals[4]
+                    leeches_total: leech_totals[1] + leech_totals[2] + leech_totals[3] + leech_totals[4],
+                    srs_level_leech_trends: srs_level_leech_trends[1...5],
+                    srs_level_leech_trend_total: srs_level_leech_trends[1] + srs_level_leech_trends[2] + srs_level_leech_trends[3] + srs_level_leech_trends[4]
                 },
                 guru: {
                     srs_level_totals: srs_level_totals[5...7],
                     total: srs_level_totals[5] + srs_level_totals[6],
                     srs_level_leeches_totals: leech_totals[5...7],
-                    leeches_total: leech_totals[5] + leech_totals[6]
+                    leeches_total: leech_totals[5] + leech_totals[6],
+                    srs_level_leech_trends: srs_level_leech_trends[5...7],
+                    srs_level_leech_trend_total: srs_level_leech_trends[5] + srs_level_leech_trends[6]
                 },
                 master: {
                     srs_level_totals: srs_level_totals[7...8],
                     total: srs_level_totals[7],  
                     srs_level_leeches_totals: leech_totals[7...8],
-                    leeches_total: leech_totals[7]  
+                    leeches_total: leech_totals[7],
+                    srs_level_leech_trends: srs_level_leech_trends[7...8],
+                    srs_level_leech_trend_total: srs_level_leech_trends[7]
                 },
                 enlightened: {
                     srs_level_totals: srs_level_totals[8...9],
                     total: srs_level_totals[8],
                     srs_level_leeches_totals: leech_totals[8...9],
-                    leeches_total: leech_totals[8]  
+                    leeches_total: leech_totals[8],
+                    srs_level_leech_trends: srs_level_leech_trends[8...9],
+                    srs_level_leech_trend_total: srs_level_leech_trends[8]
                 },
                 burned: {
                     srs_level_totals: srs_level_totals[9...10],
                     leeches_total: srs_level_totals[9],
                     srs_level_leeches_totals: [0],
-                    leeches_total: 0
+                    leeches_total: 0,
+                    srs_level_leech_trends: [0],
+                    srs_level_leech_trend_total: 0
                 },
                 order: ['apprentice', 'guru', 'master', 'enlightened', 'burned']
             }
@@ -108,6 +122,13 @@ class SrsController < ApplicationController
                 primary_meaning = subjects[review_data['subject_id']]['data']['meanings'].find { |meaning| meaning['primary'] }['meaning']
             end
 
+            trend = 0
+            if worst_current_streak > 1
+                trend = -1 
+            elsif worst_incorrect > 1
+                trend = 1
+            end
+
             leech = {
                 subject_id: review_data['subject_id'],
                 subject_type: review_data['subject_type'],
@@ -118,7 +139,8 @@ class SrsController < ApplicationController
                 worst_type: worst_type,
                 worst_incorrect: worst_incorrect,
                 worst_current_streak: worst_current_streak,
-                primary_meaning: primary_meaning
+                primary_meaning: primary_meaning,
+                trend: trend
             }
             if (primary_reading)
                 leech[:primary_reading] = primary_reading
