@@ -3,10 +3,10 @@
 <% ['name', 'worst', 'srs', 'wrong', 'streak', 'score'].each do |sort| %>
 <table class='dataTable type_<%= sort %>' style='<%= (sort == (params[:sort_by] || 'score') ? '' : 'display: none;') %>'>
 <tr>
-    <% ['Item', 'Worst', 'SRS', 'Wrong', 'Streak', 'Score'].each do |sort_name| %>
+    <% ['Item', 'Worst', 'SRS', 'Wrong', 'Streak', 'Score', 'Score Trend'].each do |sort_name| %>
         <% sort_type = sort_name == 'Item' ? 'name' : sort_name.downcase %>
         <td>
-            <% if sort_type != sort %>
+            <% if sort_type != sort && sort_type != 'score trend' %>
                 <% path = "?sort_by=#{sort_type}"+(params[:api_key] ? "&api_key=#{params[:api_key]}" : '') %>
                 <a href='<%= path %>' onclick='$(".dataTable").hide(); $(".type_<%= sort_type %>").show(); window.history.pushState(null, null, "<%= path %>"); return false;' style='color: white;'>
                     <%= sort_name %>
@@ -17,7 +17,10 @@
                 <% else %>
                     <span>
                 <% end %>
-                <%= sort_name %></span>&nbsp;<span style='font-size: 0.5em; vertical-align: middle;'>▼</span>
+                <%= sort_name %></span>
+                <% if sort_type != 'score trend' %>
+                    &nbsp;<span style='font-size: 0.5em; vertical-align: middle;'>▼</span>
+                <% end %>
             <% end %>
         </td>
     <% end %>
@@ -48,6 +51,15 @@
     <td style='text-align: right;'><%= leech[:worst_incorrect] %></td>
     <td style='text-align: right;'><%= leech[:worst_current_streak] %></td>
     <td style='text-align: right;'><span title='<%= "#{leech[:worst_incorrect]} / (#{leech[:worst_current_streak]} ^ 1.5) = #{leech[:worst_score]}" %>'><%= leech[:worst_score] %></span></td>
+    <td style='text-align: center;'>
+        <% if leech[:worst_current_streak] > 1 %>
+            <span title='Score decrease :)'>▼</span>
+        <% elsif leech[:worst_incorrect] > 1 %>
+            <span title='Score increase :('>▲</span>
+        <% else %>
+            <span title='New leech :('>—</span>
+        <% end %>
+     </td>
 </tr>
 <% end %>
 </table>
