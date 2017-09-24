@@ -42,7 +42,7 @@
     <% last_srs_stage_name = srs_stage_name %>
 <% end %>
 <tr>
-    <td class='<%= "item item#{leech[:subject_type]}" %>'><%= leech[:name] %></td>
+    <td class='<%= "item item#{leech[:subject_type]}" %>'><a href='<%= "https://wanikani.com/#{leech[:subject_type]}/#{leech[:name]}" %>' style='color:white;' target='_blank'><%= leech[:name] %></a></td>
     <td><%= leech[:worst_type] %></td>
     <td class='<%= "srs srs#{srs_stage_name.downcase}" %>'><%= leech[:srs_stage] %></td>
     <td style='text-align: right;'><%= leech[:worst_incorrect] %></td>
