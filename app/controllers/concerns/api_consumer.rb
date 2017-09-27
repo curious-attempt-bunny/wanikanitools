@@ -170,10 +170,7 @@ module ApiConsumer
                 puts "Replaced/new: #{data.size} (#{map.size})"
             end
             
-            data_updated_at = DateTime.strptime(result['data_updated_at'], '%Y-%m-%dT%H:%M:%S%z')
-            time = Time.parse(data_updated_at.to_s)
             File.write(filename, JSON.generate(result))
-            File.utime(time, time, filename)
         else
             NewRelic::Agent.add_custom_attributes({"cache_update/#{path}": 0})
             puts "No update to cache"
