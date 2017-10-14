@@ -155,26 +155,6 @@ class SrsController < ApplicationController
         leeches
     end
 
-    def convert_to_map_by_id(json)
-        map = Hash.new
-
-        json['data'].each do |item|
-            map[item['id']] = item
-        end
-
-        map
-    end
-
-    def convert_to_map_by_data_subject_id(json)
-        map = Hash.new
-
-        json['data'].each do |item|
-            map[item['data']['subject_id']] = item
-        end
-
-        map
-    end
-
     def filename_for(api_key, path)
         prefix = "#{api_key}_"
         prefix = '' if path == '/api/v2/subjects'        
@@ -207,6 +187,7 @@ class SrsController < ApplicationController
                     result = JSON.parse(File.read(filename))
 
                     result['data'].each do |item|
+                        next if item.is_a? String # kludge
                         id_map[item['data'].has_key?('subject_id') ? item['data']['subject_id'] : item['id']] = item
                     end
 
@@ -234,10 +215,12 @@ class SrsController < ApplicationController
                 if result.nil?
                     result = json
                     result['data'].each do |item|
+                        next if item.is_a? String # kludge
                         id_map[item['data'].has_key?('subject_id') ? item['data']['subject_id'] : item['id']] = item
                     end
                 else
                     json['data'].each do |item|
+                        next if item.is_a? String # kludge
                         id_map[item['data'].has_key?('subject_id') ? item['data']['subject_id'] : item['id']] = item
                     end
                 end
@@ -280,6 +263,4 @@ class SrsController < ApplicationController
 
     add_method_tracer :collect
     add_method_tracer :leeches
-    add_method_tracer :convert_to_map_by_id
-    add_method_tracer :convert_to_map_by_data_subject_id    
 end
