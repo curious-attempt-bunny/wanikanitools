@@ -87,7 +87,7 @@ class SrsController < ApplicationController
                 },
                 order: ['apprentice', 'guru', 'master', 'enlightened', 'burned']
             },
-            review_order: review_order
+            review_order: review_order[0...10]
         }
 
         render json: status
