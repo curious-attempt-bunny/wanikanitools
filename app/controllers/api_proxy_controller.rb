@@ -6,4 +6,10 @@ class ApiProxyController < ApplicationController
 
         render json: json
     end
+
+    def get_filtered
+        raise request.path
+
+        json = fetch(request.path)        
+    end
 end

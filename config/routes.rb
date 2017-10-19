@@ -15,6 +15,10 @@ Rails.application.routes.draw do
   get 'api/v2/summary', to: 'api_proxy#get'
   get 'api/v2/review_statistics', to: 'api_proxy#get'
 
+  get 'api/v2/assignments/:filter', to: 'api_proxy#get_filtered'
+  get 'api/v2/review_statistics/:filter', to: 'api_proxy#get_filtered'
+  get 'api/v2/subjects/:filter', to: 'api_proxy#get_filtered'
+  
   get 'review_data/merged', to: 'review_data#merged'
   get 'srs/status', to: 'srs#status'
   get 'leeches', to: 'leeches#index', defaults: { format: 'json' }

@@ -6,7 +6,8 @@ class SrsController < ApplicationController
         id_maps = collect([
             '/api/v2/subjects',
             '/api/v2/review_statistics',
-            '/api/v2/assignments'
+            '/api/v2/assignments',
+            '/api/v2/summary'
         ])
         leeches = leeches(id_maps).select { |item| item[:worst_score] > 0.5 }
 
@@ -17,6 +18,14 @@ class SrsController < ApplicationController
         id_maps['/api/v2/assignments'].each do |id, item|
             srs_level_totals[item['data']['srs_stage']] += 1
         end
+
+        subject_review_index = Hash.new(1000)
+        id_maps['/api/v2/summary']['data']['data']['reviews_per_hour'].each_with_index do |review_hour, i|
+            review_hour['subject_ids'].each do |subject_id|
+                subject_review_index[subject_id] = i
+            end
+        end
+        review_order = leeches.dup.sort { |a,b| subject_review_index[a[:subject_id]] <=> subject_review_index[b[:subject_id]] }
 
         leeches.each do |item|
             leech_totals[item[:srs_stage]] += 1
@@ -77,7 +86,8 @@ class SrsController < ApplicationController
                     srs_level_leech_trend_total: 0
                 },
                 order: ['apprentice', 'guru', 'master', 'enlightened', 'burned']
-            }
+            },
+            review_order: review_order
         }
 
         render json: status
@@ -186,9 +196,12 @@ class SrsController < ApplicationController
                 begin
                     result = JSON.parse(File.read(filename))
 
-                    result['data'].each do |item|
-                        next if item.is_a? String # kludge
-                        id_map[item['data'].has_key?('subject_id') ? item['data']['subject_id'] : item['id']] = item
+                    if path == '/api/v2/summary'
+                        id_map['data'] = result
+                    else
+                        result['data'].each do |item|
+                            id_map[item['data'].has_key?('subject_id') ? item['data']['subject_id'] : item['id']] = item
+                        end
                     end
 
                     updated_after = result['data_updated_at'] if result['object'] == 'collection'
@@ -211,23 +224,20 @@ class SrsController < ApplicationController
                 # puts "Complete -- #{url} with content length #{response.body.size} ??"
                 raise "Non-200 response code for #{url}" if response.code != 200
                 json = JSON.parse(response.body)
-                puts "#{page_number}/#{json['pages']['last']} for #{path} (#{url})"
-                if result.nil?
-                    result = json
-                    result['data'].each do |item|
-                        next if item.is_a? String # kludge
-                        id_map[item['data'].has_key?('subject_id') ? item['data']['subject_id'] : item['id']] = item
-                    end
+                puts "#{page_number}/#{json['pages'] ? json['pages']['last'] : 1} for #{path} (#{url})"
+                result = json if result.nil?
+                if path == '/api/v2/summary'
+                    id_map['data'] = json
                 else
                     json['data'].each do |item|
-                        next if item.is_a? String # kludge
                         id_map[item['data'].has_key?('subject_id') ? item['data']['subject_id'] : item['id']] = item
                     end
                 end
+
                 if page_number == 1
                     result['data_updated_at'] = json['data_updated_at']
                 end
-                if page_number < json['pages']['last'].to_i
+                if json['pages'].present? && page_number < json['pages']['last'].to_i
                     page_number += 1
                     url = "https://www.wanikani.com#{path}?page=#{page_number}#{updated_after ? "&updated_after=#{updated_after}" : ''}"
 
