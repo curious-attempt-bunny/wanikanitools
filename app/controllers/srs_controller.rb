@@ -192,16 +192,11 @@ class SrsController < ApplicationController
             id_maps[path] = id_map
             updated_after = nil
             puts "#{filename} exists? #{File.exists?(filename)}"
-            if File.exists?(filename)
+            if File.exists?(filename) && path != '/api/v2/summary'
                 begin
                     result = JSON.parse(File.read(filename))
-
-                    if path == '/api/v2/summary'
-                        id_map['data'] = result
-                    else
-                        result['data'].each do |item|
-                            id_map[item['data'].has_key?('subject_id') ? item['data']['subject_id'] : item['id']] = item
-                        end
+                    result['data'].each do |item|
+                        id_map[item['data'].has_key?('subject_id') ? item['data']['subject_id'] : item['id']] = item
                     end
 
                     updated_after = result['data_updated_at'] if result['object'] == 'collection'
@@ -252,8 +247,10 @@ class SrsController < ApplicationController
                     hydra.queue(request)
                 else
                     puts "Done: #{path}"
-                    result['data'] = id_map.values
-                    File.write(filename, JSON.generate(result))
+                    unless path == '/api/v2/summary'
+                        result['data'] = id_map.values
+                        File.write(filename, JSON.generate(result))
+                    end
                 end
             end
             request.on_complete do |response|
